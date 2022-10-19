@@ -16,18 +16,30 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
   try {
     const { search } = req.query;
-    if (search == undefined) {
-      // No filter applied, return all animals
-      const allAnimals = await Animal.find();
-      return res.status(200).send(allAnimals);
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.page) : 6;
+
+    const findFilterObj: any = {};
+    if (search !== undefined) {
+      const searchRegex = new RegExp(search as string, "i");
+      findFilterObj.$or = [
+        { idSenasa: searchRegex },
+        { paddockName: searchRegex },
+      ];
     }
 
     // Filter results by name and idSenesa that partially match search string
-    const searchRegex = new RegExp(search as string, "i");
-    const searchResults = await Animal.find({
-      $or: [{ idSenasa: searchRegex }, { paddockName: searchRegex }],
+    const searchResults = await Animal.find(findFilterObj)
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+    const count = await Animal.countDocuments();
+
+    return res.status(200).send({
+      animals: searchResults,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
     });
-    return res.status(200).send(searchResults);
   } catch (e: any) {
     return res.status(500).send({ msg: e.message });
   }
