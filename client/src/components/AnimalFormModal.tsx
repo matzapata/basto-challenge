@@ -67,7 +67,7 @@ export default function NewAnimalModal({
         ...animal,
       });
       dispatch(fetchAnimals({}));
-      window.alert("Successfully created animal");
+      window.alert("Se elimino el animal exitosamente");
     } else {
       const updatedAnimal = { ...animal };
       delete updatedAnimal.id;
@@ -75,16 +75,17 @@ export default function NewAnimalModal({
         ...updatedAnimal,
       });
       dispatch(fetchAnimals({}));
-      window.alert("Successfully updated animal");
+      window.alert("Se actualizo el animal exitosamente");
     }
+    setAnimal(emptyAnimal);
     onClose();
   };
 
   return (
     <Modal
       onClose={() => {
-        onClose();
         setAnimal(emptyAnimal);
+        onClose();
       }}
       isOpen={isOpen}
       scrollBehavior="inside"

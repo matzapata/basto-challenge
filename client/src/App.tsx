@@ -13,6 +13,7 @@ import AnimalsTable from "./components/AnimalsTable";
 import { IAnimal } from "./redux/slices/animals";
 import { useAppDispatch, useAppSelector } from "./redux/store";
 import { fetchAnimals } from "./redux/slices/animalsThunk";
+import axios from "axios";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -64,12 +65,18 @@ function App() {
 
       <AnimalsTable
         animals={animals}
-        onDelete={(animal) => {
+        onDelete={async (animal) => {
           console.log(animal);
           const confirmation = window.confirm(
             `Estas seguro que desea eliminar animal con id ${animal.idSenasa}?`
           );
-          if (confirmation) console.log("Eliminado");
+          if (confirmation) {
+            await axios.delete(
+              `${process.env.REACT_APP_API}/animals/${animal.id}`
+            );
+            window.alert("Se elimino el animal exitosamente");
+            dispatch(fetchAnimals({ search }));
+          }
         }}
         onEdit={(animal) => {
           setCurrAnimal(animal);
@@ -82,14 +89,18 @@ function App() {
           <Button
             disabled={currentPage === 1}
             size="sm"
-            onClick={() => dispatch(fetchAnimals({ page: currentPage - 1 }))}
+            onClick={() =>
+              dispatch(fetchAnimals({ search, page: currentPage - 1 }))
+            }
           >
             Prev
           </Button>
           <Button
             size="sm"
             disabled={currentPage === totalPages}
-            onClick={() => dispatch(fetchAnimals({ page: currentPage + 1 }))}
+            onClick={() =>
+              dispatch(fetchAnimals({ search, page: currentPage + 1 }))
+            }
           >
             Next
           </Button>

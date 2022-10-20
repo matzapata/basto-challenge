@@ -58,8 +58,9 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await Animal.updateOne({ id }, req.body);
-    const updatedAnimal = await Animal.findById(id);
+    const updatedAnimal = await Animal.findOneAndUpdate({ _id: id }, req.body, {
+      returnOriginal: false,
+    });
     return res.status(200).send(updatedAnimal);
   } catch (e: any) {
     return res.status(500).send({ msg: e.message });
