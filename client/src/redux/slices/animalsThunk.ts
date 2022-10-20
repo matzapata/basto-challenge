@@ -3,8 +3,11 @@ import axios from "axios";
 
 export const fetchAnimals = createAsyncThunk(
   "animals/fetchAnimals",
-  async () => {
-    const res = await axios.get(`${process.env.REACT_APP_API}/animals`);
+  async (payload: { search?: string }) => {
+    const getUrl = payload.search
+      ? `${process.env.REACT_APP_API}/animals?search=${payload.search}`
+      : `${process.env.REACT_APP_API}/animals`;
+    const res = await axios.get(getUrl);
 
     return {
       currentPage: res.data.currentPage,

@@ -23,11 +23,12 @@ function App() {
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(search);
+    if (search !== "") dispatch(fetchAnimals({ search }));
+    else dispatch(fetchAnimals({}));
   };
 
   React.useEffect(() => {
-    dispatch(fetchAnimals());
+    dispatch(fetchAnimals({}));
   }, []);
 
   return (
@@ -56,7 +57,6 @@ function App() {
             onChange={(e) => setSearch(e.target.value)}
             type="text"
             placeholder="Buscar por nombre, id senasa"
-            required
           />
         </form>
       </Box>
@@ -79,9 +79,6 @@ function App() {
       <Box display="flex" justifyContent="right" mt="8">
         <ButtonGroup isAttached>
           <Button size="sm">Prev</Button>
-          <Button size="sm">1</Button>
-          <Button size="sm">...</Button>
-          <Button size="sm">4</Button>
           <Button size="sm">Next</Button>
         </ButtonGroup>
       </Box>

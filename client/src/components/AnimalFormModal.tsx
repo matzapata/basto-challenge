@@ -66,7 +66,7 @@ export default function NewAnimalModal({
       await axios.post(`${process.env.REACT_APP_API}/animals`, {
         ...animal,
       });
-      dispatch(fetchAnimals());
+      dispatch(fetchAnimals({}));
       window.alert("Successfully created animal");
     } else {
       const updatedAnimal = { ...animal };
@@ -74,7 +74,7 @@ export default function NewAnimalModal({
       await axios.put(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
         ...updatedAnimal,
       });
-      dispatch(fetchAnimals());
+      dispatch(fetchAnimals({}));
       window.alert("Successfully updated animal");
     }
     onClose();
