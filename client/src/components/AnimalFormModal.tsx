@@ -12,9 +12,17 @@ import {
   ModalOverlay,
   Select,
 } from "@chakra-ui/react";
-import { IAnimal } from "../redux/slices/animals";
+interface Animal {
+  id?: string;
+  idSenasa: string;
+  type: "Novillo" | "Toro" | "Vaquillona";
+  weight?: number;
+  paddockName: string;
+  deviceName: "COLLAR" | "CARAVANA";
+  deviceNumber: string;
+}
 
-const emptyAnimal: IAnimal = {
+const emptyAnimal: Animal = {
   idSenasa: "",
   deviceName: "COLLAR",
   deviceNumber: "",
@@ -32,9 +40,9 @@ export default function NewAnimalModal({
   isNew: boolean;
   isOpen: boolean;
   onClose: () => void;
-  defaultAnimal?: IAnimal;
+  defaultAnimal?: Animal;
 }) {
-  const [animal, setAnimal] = React.useState<IAnimal>(emptyAnimal);
+  const [animal, setAnimal] = React.useState<Animal>(emptyAnimal);
 
   React.useEffect(() => {
     if (defaultAnimal) setAnimal(defaultAnimal);

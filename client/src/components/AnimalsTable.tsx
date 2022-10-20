@@ -6,7 +6,6 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
@@ -44,7 +43,7 @@ export default function AnimalsTable({
           {animals.length !== 0 ? (
             <Tbody bg="gray.50">
               {animals.map((animal) => (
-                <Tr key={animal.idSenasa}>
+                <Tr key={animal.id}>
                   <Td>{animal.idSenasa}</Td>
                   <Td>{animal.type}</Td>
                   <Td isNumeric>{animal.weight}</Td>
@@ -71,9 +70,11 @@ export default function AnimalsTable({
               ))}
             </Tbody>
           ) : (
-            <Text my="4" px="6">
-              No hay animales guardados
-            </Text>
+            <Tbody my="4" px="6">
+              <Tr>
+                <Td>No hay animales guardados</Td>
+              </Tr>
+            </Tbody>
           )}
         </Table>
       </TableContainer>

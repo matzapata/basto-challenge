@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchAnimals } from "./animalsThunk";
 
 export interface IAnimal {
+  id: string;
   idSenasa: string;
   type: "Novillo" | "Toro" | "Vaquillona";
   weight?: number;
@@ -16,16 +18,7 @@ export interface AnimalsState {
 }
 
 const initialState: AnimalsState = {
-  animals: [
-    {
-      idSenasa: "id",
-      deviceName: "COLLAR",
-      deviceNumber: "deviceNumber",
-      type: "Novillo",
-      paddockName: "paddockName",
-      weight: 30,
-    },
-  ],
+  animals: [],
   totalPages: 0,
   currentPage: 0,
 };
@@ -34,6 +27,13 @@ export const animalsSlice = createSlice({
   name: "animals",
   initialState,
   reducers: {},
+  extraReducers(builder) {
+    builder.addCase(fetchAnimals.fulfilled, (state, { payload }) => {
+      state.animals = payload.animals;
+      state.currentPage = payload.currentPage;
+      state.totalPages = payload.totalPages;
+    });
+  },
 });
 
 export const {} = animalsSlice.actions;

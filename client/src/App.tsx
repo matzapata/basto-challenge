@@ -11,9 +11,11 @@ import {
 import AnimalFormModal from "./components/AnimalFormModal";
 import AnimalsTable from "./components/AnimalsTable";
 import { IAnimal } from "./redux/slices/animals";
-import { useAppSelector } from "./redux/store";
+import { useAppDispatch, useAppSelector } from "./redux/store";
+import { fetchAnimals } from "./redux/slices/animalsThunk";
 
 function App() {
+  const dispatch = useAppDispatch();
   const [search, setSearch] = React.useState("");
   const [currAnimal, setCurrAnimal] = React.useState<IAnimal | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -23,6 +25,10 @@ function App() {
     e.preventDefault();
     console.log(search);
   };
+
+  React.useEffect(() => {
+    dispatch(fetchAnimals());
+  }, []);
 
   return (
     <Container maxW="container.lg" my="10">
