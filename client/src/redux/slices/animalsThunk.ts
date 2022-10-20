@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { IAnimal } from "./animals";
 
 export const fetchAnimals = createAsyncThunk(
   "animals/fetchAnimals",

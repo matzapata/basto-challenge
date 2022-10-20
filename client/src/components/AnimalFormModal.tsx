@@ -12,6 +12,11 @@ import {
   ModalOverlay,
   Select,
 } from "@chakra-ui/react";
+import { IAnimal } from "../redux/slices/animals";
+import axios from "axios";
+import { fetchAnimals } from "../redux/slices/animalsThunk";
+import { useAppDispatch } from "../redux/store";
+
 interface Animal {
   id?: string;
   idSenasa: string;
@@ -32,21 +37,20 @@ const emptyAnimal: Animal = {
 };
 
 export default function NewAnimalModal({
-  isNew,
   isOpen,
   onClose,
   defaultAnimal,
 }: {
-  isNew: boolean;
   isOpen: boolean;
   onClose: () => void;
-  defaultAnimal?: Animal;
+  defaultAnimal?: IAnimal;
 }) {
+  const dispatch = useAppDispatch();
+  const createAnimal = defaultAnimal === undefined;
   const [animal, setAnimal] = React.useState<Animal>(emptyAnimal);
 
   React.useEffect(() => {
     if (defaultAnimal) setAnimal(defaultAnimal);
-    console.log(defaultAnimal);
   }, [defaultAnimal]);
 
   const onChange = (e: any) => {
@@ -56,9 +60,24 @@ export default function NewAnimalModal({
     });
   };
 
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(animal);
+    if (createAnimal) {
+      await axios.post(`${process.env.REACT_APP_API}/animals`, {
+        ...animal,
+      });
+      dispatch(fetchAnimals());
+      window.alert("Successfully created animal");
+    } else {
+      const updatedAnimal = { ...animal };
+      delete updatedAnimal.id;
+      await axios.put(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
+        ...updatedAnimal,
+      });
+      dispatch(fetchAnimals());
+      window.alert("Successfully updated animal");
+    }
+    onClose();
   };
 
   return (
@@ -72,7 +91,7 @@ export default function NewAnimalModal({
     >
       <ModalOverlay />
       <ModalContent bg="gray.100">
-        <ModalHeader>{isNew ? "Nuevo" : "Editar"} animal</ModalHeader>
+        <ModalHeader>{createAnimal ? "Nuevo" : "Editar"} animal</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={onSubmit}>

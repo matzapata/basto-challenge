@@ -87,7 +87,6 @@ function App() {
       </Box>
 
       <AnimalFormModal
-        isNew={true}
         defaultAnimal={currAnimal}
         isOpen={isOpen}
         onClose={onClose}
