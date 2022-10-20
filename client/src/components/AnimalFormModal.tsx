@@ -13,21 +13,8 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { IAnimal } from "../redux/slices/animals";
-import axios from "axios";
-import { fetchAnimals } from "../redux/slices/animalsThunk";
-import { useAppDispatch } from "../redux/store";
 
-interface Animal {
-  id?: string;
-  idSenasa: string;
-  type: "Novillo" | "Toro" | "Vaquillona";
-  weight?: number;
-  paddockName: string;
-  deviceName: "COLLAR" | "CARAVANA";
-  deviceNumber: string;
-}
-
-const emptyAnimal: Animal = {
+const emptyAnimal: IAnimal = {
   idSenasa: "",
   deviceName: "COLLAR",
   deviceNumber: "",
@@ -40,43 +27,32 @@ export default function NewAnimalModal({
   isOpen,
   onClose,
   defaultAnimal,
+  onFormSubmit,
 }: {
   isOpen: boolean;
   onClose: () => void;
   defaultAnimal?: IAnimal;
+  onFormSubmit: (animal: IAnimal) => void;
 }) {
-  const dispatch = useAppDispatch();
   const createAnimal = defaultAnimal === undefined;
-  const [animal, setAnimal] = React.useState<Animal>(emptyAnimal);
+  const [animal, setAnimal] = React.useState<IAnimal>(emptyAnimal);
 
   React.useEffect(() => {
     if (defaultAnimal) setAnimal(defaultAnimal);
   }, [defaultAnimal]);
 
-  const onChange = (e: any) => {
+  const onChange: React.ChangeEventHandler<
+    HTMLSelectElement | HTMLInputElement
+  > = (e) => {
     setAnimal({
       ...animal,
       [e.target.name]: e.target.value,
     });
   };
 
-  const onSubmit = async (e: any) => {
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    if (createAnimal) {
-      await axios.post(`${process.env.REACT_APP_API}/animals`, {
-        ...animal,
-      });
-      dispatch(fetchAnimals({}));
-      window.alert("Se elimino el animal exitosamente");
-    } else {
-      const updatedAnimal = { ...animal };
-      delete updatedAnimal.id;
-      await axios.put(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
-        ...updatedAnimal,
-      });
-      dispatch(fetchAnimals({}));
-      window.alert("Se actualizo el animal exitosamente");
-    }
+    onFormSubmit(animal);
     setAnimal(emptyAnimal);
     onClose();
   };

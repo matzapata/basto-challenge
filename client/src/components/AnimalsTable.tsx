@@ -9,19 +9,59 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { IAnimal } from "../redux/slices/animals";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { fetchAnimals } from "../redux/slices/animalsThunk";
+import AnimalsTablePagination from "./AnimalsTablePagination";
+import AnimalFormModal from "./AnimalFormModal";
+import axios from "axios";
 
-export default function AnimalsTable({
-  animals,
-  onEdit,
-  onDelete,
-}: {
-  animals: IAnimal[];
-  onEdit: (animal: IAnimal) => void;
-  onDelete: (animal: IAnimal) => void;
-}) {
+export default function AnimalsTable() {
+  const dispatch = useAppDispatch();
+  const animals = useAppSelector((state) => state.animals.animals);
+  const [currAnimal, setCurrAnimal] = React.useState<IAnimal | undefined>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  React.useEffect(() => {
+    dispatch(fetchAnimals({}));
+  }, []);
+
+  const onEdit = async (animal: IAnimal) => {
+    try {
+      const updatedAnimal = { ...animal };
+      delete updatedAnimal.id;
+      await axios.put(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
+        ...updatedAnimal,
+      });
+      dispatch(fetchAnimals({}));
+      window.alert("Se actualizo el animal exitosamente");
+    } catch (e) {
+      window.alert("Error actualizando datos");
+      console.log(e);
+    }
+  };
+
+  const onDelete = async (animal: IAnimal) => {
+    if (animal.id === undefined) return;
+    if (
+      window.confirm(
+        `Estas seguro que desea eliminar animal con id ${animal.idSenasa}?`
+      )
+    ) {
+      try {
+        await axios.delete(`${process.env.REACT_APP_API}/animals/${animal.id}`);
+        dispatch(fetchAnimals({}));
+        window.alert("Se elimino el animal exitosamente");
+      } catch (e) {
+        window.alert("Error eliminando el animal");
+        console.log(e);
+      }
+    }
+  };
+
   return (
     <>
       <Heading mb="2" size="md">
@@ -52,7 +92,10 @@ export default function AnimalsTable({
                   <Td>{animal.deviceNumber}</Td>
                   <Td>
                     <IconButton
-                      onClick={() => onEdit(animal)}
+                      onClick={() => {
+                        setCurrAnimal(animal);
+                        onOpen();
+                      }}
                       color="green.600"
                       variant="ghost"
                       aria-label="edit"
@@ -78,6 +121,17 @@ export default function AnimalsTable({
           )}
         </Table>
       </TableContainer>
+
+      {/* Animals pagination connected through redux */}
+      <AnimalsTablePagination />
+
+      {/* Edit animal form */}
+      <AnimalFormModal
+        onFormSubmit={(animal) => onEdit(animal)}
+        defaultAnimal={currAnimal}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
     </>
   );
 }

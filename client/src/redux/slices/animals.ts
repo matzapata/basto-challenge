@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchAnimals } from "./animalsThunk";
 
 export interface IAnimal {
-  id: string;
+  id?: string;
   idSenasa: string;
   type: "Novillo" | "Toro" | "Vaquillona";
   weight?: number;
@@ -12,12 +12,14 @@ export interface IAnimal {
 }
 
 export interface AnimalsState {
+  search: string;
   animals: IAnimal[];
   totalPages: number;
   currentPage: number;
 }
 
 const initialState: AnimalsState = {
+  search: "",
   animals: [],
   totalPages: 0,
   currentPage: 0,
