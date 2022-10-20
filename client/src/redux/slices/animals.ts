@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export interface IAnimal {
   idSenasa: string;
   type: "Novillo" | "Toro" | "Vaquillona";
-  weight: number;
+  weight?: number;
   paddockName: string;
   deviceName: "COLLAR" | "CARAVANA";
   deviceNumber: string;
@@ -16,7 +16,16 @@ export interface AnimalsState {
 }
 
 const initialState: AnimalsState = {
-  animals: [],
+  animals: [
+    {
+      idSenasa: "id",
+      deviceName: "COLLAR",
+      deviceNumber: "deviceNumber",
+      type: "Novillo",
+      paddockName: "paddockName",
+      weight: 30,
+    },
+  ],
   totalPages: 0,
   currentPage: 0,
 };

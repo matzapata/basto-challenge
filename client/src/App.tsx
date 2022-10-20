@@ -1,10 +1,91 @@
 import React from "react";
-import { Container, Heading } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  Heading,
+  Input,
+  useDisclosure,
+} from "@chakra-ui/react";
+import AnimalFormModal from "./components/AnimalFormModal";
+import AnimalsTable from "./components/AnimalsTable";
+import { IAnimal } from "./redux/slices/animals";
+import { useAppSelector } from "./redux/store";
 
 function App() {
+  const [search, setSearch] = React.useState("");
+  const [currAnimal, setCurrAnimal] = React.useState<IAnimal | undefined>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const animals = useAppSelector((state) => state.animals.animals);
+
+  const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(search);
+  };
+
   return (
-    <Container minW="container.lg" my="10">
-      <Heading>Gestion de animales</Heading>
+    <Container maxW="container.lg" my="10">
+      <Heading mb="8">Gestion de animales</Heading>
+
+      <Button
+        size="sm"
+        bg="gray.800"
+        color="white"
+        _hover={{ backgroundColor: "gray.700" }}
+        onClick={() => {
+          setCurrAnimal(undefined);
+          onOpen();
+        }}
+      >
+        New animal
+      </Button>
+
+      <Box my="8">
+        <form onSubmit={onSearch}>
+          <Heading size="md" mb="2">
+            Nombre / ID senasa animal
+          </Heading>
+          <Input
+            onChange={(e) => setSearch(e.target.value)}
+            type="text"
+            placeholder="Buscar por nombre, id senasa"
+            required
+          />
+        </form>
+      </Box>
+
+      <AnimalsTable
+        animals={animals}
+        onDelete={(animal) => {
+          console.log(animal);
+          const confirmation = window.confirm(
+            `Estas seguro que desea eliminar animal con id ${animal.idSenasa}?`
+          );
+          if (confirmation) console.log("Eliminado");
+        }}
+        onEdit={(animal) => {
+          setCurrAnimal(animal);
+          onOpen();
+        }}
+      />
+
+      <Box display="flex" justifyContent="right" mt="8">
+        <ButtonGroup isAttached>
+          <Button size="sm">Prev</Button>
+          <Button size="sm">1</Button>
+          <Button size="sm">...</Button>
+          <Button size="sm">4</Button>
+          <Button size="sm">Next</Button>
+        </ButtonGroup>
+      </Box>
+
+      <AnimalFormModal
+        isNew={true}
+        defaultAnimal={currAnimal}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
     </Container>
   );
 }
