@@ -2,6 +2,7 @@ import React from "react";
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   Modal,
@@ -36,6 +37,11 @@ export default function NewAnimalModal({
 }) {
   const createAnimal = defaultAnimal === undefined;
   const [animal, setAnimal] = React.useState<IAnimal>(emptyAnimal);
+  const [errors, setErrors] = React.useState({
+    idSenasa: "",
+    deviceNumber: "",
+    paddockName: "",
+  });
 
   React.useEffect(() => {
     if (defaultAnimal) setAnimal(defaultAnimal);
@@ -44,17 +50,33 @@ export default function NewAnimalModal({
   const onChange: React.ChangeEventHandler<
     HTMLSelectElement | HTMLInputElement
   > = (e) => {
-    setAnimal({
-      ...animal,
-      [e.target.name]: e.target.value,
-    });
+    setAnimal({ ...animal, [e.target.name]: e.target.value });
+    validate({ ...animal, [e.target.name]: e.target.value });
   };
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+
+    // check errors and avoid submit if corresponds
+    if (errors.idSenasa !== "") return;
+    if (errors.paddockName !== "") return;
+    if (errors.deviceNumber !== "") return;
+
     onFormSubmit(animal);
     setAnimal(emptyAnimal);
     onClose();
+  };
+
+  const validate = ({ idSenasa, deviceNumber, paddockName }: IAnimal) => {
+    const errors = {
+      idSenasa: "",
+      deviceNumber: "",
+      paddockName: "",
+    };
+    if (idSenasa.length > 16) errors.idSenasa = "Maximo 16 caracteres";
+    if (deviceNumber.length > 8) errors.idSenasa = "Maximo 8 caracteres";
+    if (paddockName.length > 200) errors.idSenasa = "Maximo 200 caracteres";
+    setErrors(errors);
   };
 
   return (
@@ -72,7 +94,7 @@ export default function NewAnimalModal({
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={onSubmit}>
-            <FormControl isRequired mb="4">
+            <FormControl isRequired mb="4" isInvalid={errors.idSenasa !== ""}>
               <FormLabel>Id SENASA</FormLabel>
               <Input
                 name="idSenasa"
@@ -82,6 +104,7 @@ export default function NewAnimalModal({
                 type="text"
                 required
               />
+              <FormErrorMessage>{errors.idSenasa}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired mb="4">
               <FormLabel>Tipo de animal</FormLabel>
@@ -107,7 +130,11 @@ export default function NewAnimalModal({
                 type="number"
               />
             </FormControl>
-            <FormControl isRequired mb="4">
+            <FormControl
+              isRequired
+              mb="4"
+              isInvalid={errors.paddockName !== ""}
+            >
               <FormLabel>Nombre del potrero</FormLabel>
               <Input
                 value={animal.paddockName}
@@ -117,6 +144,7 @@ export default function NewAnimalModal({
                 type="text"
                 required
               />
+              <FormErrorMessage>{errors.paddockName}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired mb="4">
               <FormLabel>Tipo de dispositivo</FormLabel>
@@ -132,7 +160,11 @@ export default function NewAnimalModal({
                 <option value="CARVANA">CARVANA</option>
               </Select>
             </FormControl>
-            <FormControl isRequired mb="4">
+            <FormControl
+              isRequired
+              mb="4"
+              isInvalid={errors.deviceNumber !== ""}
+            >
               <FormLabel>Numero de dispositivo</FormLabel>
               <Input
                 value={animal.deviceNumber}
@@ -142,6 +174,7 @@ export default function NewAnimalModal({
                 type="text"
                 required
               />
+              <FormErrorMessage>{errors.deviceNumber}</FormErrorMessage>
             </FormControl>
             <Button
               bg="gray.800"
