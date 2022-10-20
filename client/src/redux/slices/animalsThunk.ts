@@ -3,10 +3,14 @@ import axios from "axios";
 
 export const fetchAnimals = createAsyncThunk(
   "animals/fetchAnimals",
-  async (payload: { search?: string }) => {
+  async (payload: { search?: string; page?: number }) => {
     const getUrl = payload.search
-      ? `${process.env.REACT_APP_API}/animals?search=${payload.search}`
-      : `${process.env.REACT_APP_API}/animals`;
+      ? `${process.env.REACT_APP_API}/animals?search=${payload.search}&page=${
+          payload.page ? payload.page : 1
+        }`
+      : `${process.env.REACT_APP_API}/animals?page=${
+          payload.page ? payload.page : 1
+        }`;
     const res = await axios.get(getUrl);
 
     return {

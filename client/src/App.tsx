@@ -20,11 +20,12 @@ function App() {
   const [currAnimal, setCurrAnimal] = React.useState<IAnimal | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const animals = useAppSelector((state) => state.animals.animals);
+  const currentPage = useAppSelector((state) => state.animals.currentPage);
+  const totalPages = useAppSelector((state) => state.animals.totalPages);
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (search !== "") dispatch(fetchAnimals({ search }));
-    else dispatch(fetchAnimals({}));
+    dispatch(fetchAnimals({ search }));
   };
 
   React.useEffect(() => {
@@ -56,7 +57,7 @@ function App() {
           <Input
             onChange={(e) => setSearch(e.target.value)}
             type="text"
-            placeholder="Buscar por nombre, id senasa"
+            placeholder="Buscar por nombre del potrero, id senasa"
           />
         </form>
       </Box>
@@ -78,8 +79,20 @@ function App() {
 
       <Box display="flex" justifyContent="right" mt="8">
         <ButtonGroup isAttached>
-          <Button size="sm">Prev</Button>
-          <Button size="sm">Next</Button>
+          <Button
+            disabled={currentPage === 1}
+            size="sm"
+            onClick={() => dispatch(fetchAnimals({ page: currentPage - 1 }))}
+          >
+            Prev
+          </Button>
+          <Button
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => dispatch(fetchAnimals({ page: currentPage + 1 }))}
+          >
+            Next
+          </Button>
         </ButtonGroup>
       </Box>
 

@@ -18,9 +18,9 @@ router.get("/", async (req: Request, res: Response) => {
     const { search } = req.query;
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.page) : 6;
-
+    console.log(search);
     const findFilterObj: any = {};
-    if (search !== undefined) {
+    if (search !== undefined && search !== "") {
       const searchRegex = new RegExp(search as string, "i");
       findFilterObj.$or = [
         { idSenasa: searchRegex },
@@ -33,7 +33,7 @@ router.get("/", async (req: Request, res: Response) => {
       .limit(limit)
       .skip((page - 1) * limit)
       .exec();
-    const count = await Animal.countDocuments();
+    const count = await Animal.countDocuments(findFilterObj);
 
     return res.status(200).send({
       animals: searchResults,
