@@ -37,7 +37,7 @@ export default function NewAnimalModal() {
         _hover={{ backgroundColor: "gray.700" }}
         onClick={onOpen}
       >
-        New animal
+        Nuevo animal
       </Button>
       <AnimalFormModal
         onFormSubmit={(animal) => onSubmit(animal)}
