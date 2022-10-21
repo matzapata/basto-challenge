@@ -21,7 +21,7 @@ const emptyAnimal: IAnimal = {
   deviceNumber: "",
   type: "Novillo",
   paddockName: "",
-  weight: undefined,
+  weight: "",
 };
 
 export default function NewAnimalModal({
@@ -44,12 +44,20 @@ export default function NewAnimalModal({
   });
 
   React.useEffect(() => {
-    if (defaultAnimal) setAnimal(defaultAnimal);
+    // Prefill state with default animal passed as parameter
+    if (defaultAnimal && isOpen) {
+      // Input cannot work with value={undefined}. So if weight is not present locally define it as empty string
+      setAnimal({
+        ...defaultAnimal,
+        weight: defaultAnimal.weight === undefined ? "" : defaultAnimal.weight,
+      });
+    }
   }, [defaultAnimal, isOpen]);
 
   const onChange: React.ChangeEventHandler<
     HTMLSelectElement | HTMLInputElement
   > = (e) => {
+    // Update state an validate errors. Inputs name match state keys
     setAnimal({ ...animal, [e.target.name]: e.target.value });
     validate({ ...animal, [e.target.name]: e.target.value });
   };
@@ -62,8 +70,13 @@ export default function NewAnimalModal({
     if (errors.paddockName !== "") return;
     if (errors.deviceNumber !== "") return;
 
+    // The empty string was a local thing because of the behavior of <input value={} />. Before submitting we turn it into undefined again
+    const submitAnimal = { ...animal };
+    if (submitAnimal.weight === "") delete submitAnimal.weight;
+
+    onFormSubmit(submitAnimal);
     setAnimal(emptyAnimal);
-    onFormSubmit(animal);
+    onClose();
   };
 
   const validate = ({ idSenasa, deviceNumber, paddockName }: IAnimal) => {
@@ -124,7 +137,7 @@ export default function NewAnimalModal({
               <FormLabel>Peso</FormLabel>
               <Input
                 name="weight"
-                value={animal.weight !== undefined ? animal.weight : ""}
+                value={animal.weight}
                 onChange={onChange}
                 bg="white"
                 type="number"

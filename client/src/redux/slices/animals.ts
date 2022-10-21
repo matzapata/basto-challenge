@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchAnimals } from "./animalsThunk";
 
 export interface IAnimal {
-  id?: string;
+  id?: string; // Optional so we can use the type when creating new animals
   idSenasa: string;
   type: "Novillo" | "Toro" | "Vaquillona";
-  weight?: number;
+  weight?: number | ""; // "" to be compatible with empty input
   paddockName: string;
   deviceName: "COLLAR" | "CARAVANA";
   deviceNumber: string;

@@ -29,8 +29,10 @@ export default function AnimalsTable() {
   }, []);
 
   const onEdit = async (animal: IAnimal) => {
+    // Remove the id because we pass it as parameter in the url. It's not a property to update
     const updatedAnimal = { ...animal };
     delete updatedAnimal.id;
+
     const res = await fetch(
       `${process.env.REACT_APP_API}/animals/${animal.id}`,
       {
@@ -44,6 +46,7 @@ export default function AnimalsTable() {
     if (res.status === 200) {
       dispatch(fetchAnimals({}));
       window.alert("Se actualizo el animal exitosamente");
+      onClose();
     } else {
       window.alert("Error actualizando datos");
       console.log(res);
