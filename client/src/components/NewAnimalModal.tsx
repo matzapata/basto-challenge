@@ -19,7 +19,8 @@ export default function NewAnimalModal() {
     });
 
     if (res.status === 201) {
-      dispatch(fetchAnimals({}));
+      await dispatch(fetchAnimals({})).unwrap();
+      onClose();
       window.alert("Se creo el animal exitosamente");
     } else {
       window.alert("Error en la creacion del animal");

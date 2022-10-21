@@ -31,6 +31,7 @@ export const animalsSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(fetchAnimals.fulfilled, (state, { payload }) => {
+      state.search = payload.search !== undefined ? payload.search : "";
       state.animals = payload.animals;
       state.currentPage = payload.currentPage;
       state.totalPages = payload.totalPages;

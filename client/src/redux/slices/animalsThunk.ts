@@ -7,16 +7,18 @@ export const fetchAnimals = createAsyncThunk(
     const state = getState() as RootState;
 
     // If search parameter was not provided, take it from local state to allow pagination in search results
+    const search =
+      payload.search !== undefined ? payload.search : state.animals.search;
     const res = await fetch(
       `${process.env.REACT_APP_API}/animals?page=${
         payload.page ? payload.page : 1
-      }&search=${payload.search ? payload.search : state.animals.search}`
+      }&search=${search}`
     );
     if (res.status !== 200) throw new Error("Error getting animals");
     const data = await res.json();
 
     return {
-      search: payload.search,
+      search,
       currentPage: data.currentPage,
       totalPages: data.totalPages,
       animals: data.animals.map((a: any) => ({

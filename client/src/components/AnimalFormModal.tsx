@@ -45,7 +45,7 @@ export default function NewAnimalModal({
 
   React.useEffect(() => {
     if (defaultAnimal) setAnimal(defaultAnimal);
-  }, [defaultAnimal]);
+  }, [defaultAnimal, isOpen]);
 
   const onChange: React.ChangeEventHandler<
     HTMLSelectElement | HTMLInputElement
@@ -62,9 +62,8 @@ export default function NewAnimalModal({
     if (errors.paddockName !== "") return;
     if (errors.deviceNumber !== "") return;
 
-    onFormSubmit(animal);
     setAnimal(emptyAnimal);
-    onClose();
+    onFormSubmit(animal);
   };
 
   const validate = ({ idSenasa, deviceNumber, paddockName }: IAnimal) => {
@@ -124,7 +123,8 @@ export default function NewAnimalModal({
             <FormControl mb="4">
               <FormLabel>Peso</FormLabel>
               <Input
-                value={animal.weight === undefined ? animal.weight : 0}
+                name="weight"
+                value={animal.weight !== undefined ? animal.weight : ""}
                 onChange={onChange}
                 bg="white"
                 type="number"
@@ -157,7 +157,7 @@ export default function NewAnimalModal({
                 placeholder="Selecciona un tipo de animal"
               >
                 <option value="COLLAR">COLLAR</option>
-                <option value="CARVANA">CARVANA</option>
+                <option value="CARAVANA">CARAVANA</option>
               </Select>
             </FormControl>
             <FormControl
