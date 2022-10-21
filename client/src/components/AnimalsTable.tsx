@@ -17,7 +17,6 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import { fetchAnimals } from "../redux/slices/animalsThunk";
 import AnimalsTablePagination from "./AnimalsTablePagination";
 import AnimalFormModal from "./AnimalFormModal";
-import axios from "axios";
 
 export default function AnimalsTable() {
   const dispatch = useAppDispatch();
@@ -30,17 +29,24 @@ export default function AnimalsTable() {
   }, []);
 
   const onEdit = async (animal: IAnimal) => {
-    try {
-      const updatedAnimal = { ...animal };
-      delete updatedAnimal.id;
-      await axios.put(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
-        ...updatedAnimal,
-      });
+    const updatedAnimal = { ...animal };
+    delete updatedAnimal.id;
+    const res = await fetch(
+      `${process.env.REACT_APP_API}/animals/${animal.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ ...updatedAnimal }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (res.status === 200) {
       dispatch(fetchAnimals({}));
       window.alert("Se actualizo el animal exitosamente");
-    } catch (e) {
+    } else {
       window.alert("Error actualizando datos");
-      console.log(e);
+      console.log(res);
     }
   };
 
@@ -52,7 +58,9 @@ export default function AnimalsTable() {
       )
     ) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API}/animals/${animal.id}`);
+        await fetch(`${process.env.REACT_APP_API}/animals/${animal.id}`, {
+          method: "DELETE",
+        });
         dispatch(fetchAnimals({}));
         window.alert("Se elimino el animal exitosamente");
       } catch (e) {

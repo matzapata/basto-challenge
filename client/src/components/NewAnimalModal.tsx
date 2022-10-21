@@ -4,22 +4,26 @@ import AnimalFormModal from "./AnimalFormModal";
 import { useAppDispatch } from "../redux/store";
 import { fetchAnimals } from "../redux/slices/animalsThunk";
 import { IAnimal } from "../redux/slices/animals";
-import axios from "axios";
 
 export default function NewAnimalModal() {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async (animal: IAnimal) => {
-    try {
-      await axios.post(`${process.env.REACT_APP_API}/animals`, {
-        ...animal,
-      });
+    const res = await fetch(`${process.env.REACT_APP_API}/animals`, {
+      method: "POST",
+      body: JSON.stringify({ ...animal }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 201) {
       dispatch(fetchAnimals({}));
       window.alert("Se creo el animal exitosamente");
-    } catch (e) {
+    } else {
       window.alert("Error en la creacion del animal");
-      console.log(e);
+      console.log(res);
     }
   };
 

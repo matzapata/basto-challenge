@@ -47,6 +47,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const newAnimal = new Animal({ ...req.body });
     const insertedAnimal = await newAnimal.save();
     return res.status(201).send(insertedAnimal);
