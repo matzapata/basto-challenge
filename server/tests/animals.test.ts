@@ -2,6 +2,7 @@ import request from "supertest-session";
 import app from "../src/app";
 import mongoose from "mongoose";
 import { Animal } from "../src/schemas/animal";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 const seedAnimals = [
   {
@@ -23,26 +24,21 @@ const seedAnimals = [
 ];
 
 const server = request(app);
+let mongodb: MongoMemoryServer | null = null;
 
 describe("Animals routes", () => {
   beforeAll(async () => {
-    if (process.env.TEST_DB_URI === undefined) {
-      console.error("Missing DB_URI env variable");
-      process.exit(1);
+    mongodb = await MongoMemoryServer.create();
+    const uri = await mongodb.getUri();
+    mongoose.connect(uri);
+    await Animal.remove({});
+    for (const animal of seedAnimals) {
+      const newAnimal = new Animal(animal);
+      await newAnimal.save();
     }
-
-    try {
-      mongoose.connect(process.env.TEST_DB_URI);
-      await Animal.remove({});
-      for (const animal of seedAnimals) {
-        const newAnimal = new Animal(animal);
-        await newAnimal.save();
-      }
-    } catch (e) {
-      console.error("Unable to connect to the database:");
-      console.error(e);
-      process.exit(1);
-    }
+  });
+  afterAll(async () => {
+    if (mongodb !== null) await mongodb.stop();
   });
 
   describe("GET /api/animals", () => {

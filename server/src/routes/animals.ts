@@ -18,7 +18,7 @@ router.get("/", async (req: Request, res: Response) => {
     const { search } = req.query;
     const page = req.query.page ? Number(req.query.page) : 1;
     const limit = req.query.limit ? Number(req.query.page) : 6;
-    console.log(search);
+
     const findFilterObj: any = {};
     if (search !== undefined && search !== "") {
       const searchRegex = new RegExp(search as string, "i");
@@ -47,7 +47,6 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
     const newAnimal = new Animal({ ...req.body });
     const insertedAnimal = await newAnimal.save();
     return res.status(201).send(insertedAnimal);
